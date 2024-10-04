@@ -3,8 +3,6 @@ name: CS2 Cheat MSBuild
 on:
   workflow_dispatch:
   push:
-     tags:
-        - "v*.*.*"
 
 env:
   SOLUTION_FILE_PATH: CS2CheatCpp.sln
@@ -29,20 +27,19 @@ jobs:
         msbuild -version    
         msbuild /m /p:Configuration=${{env.BUILD_CONFIGURATION}} /p:Platform="x64" -t:rebuild -verbosity:diag ${{env.SOLUTION_FILE_PATH}}
 
-    - name: Show MSBuild Cpp Ouput
+    - name: Show MSBuild Cpp Output
       working-directory: ${{env.GITHUB_WORKSPACE}}
       run:  | 
          cd build
          dir
       shell: cmd
 
-    - name: Release CS2 Cheat 
-      uses: softprops/action-gh-release@v1
-      # if: startsWith(github.ref, 'refs/tags/')
-      with: 
-        body_path: CHANGELOG.txt
-        # tag_name: CS2 Cheat
-        files: |
-            ./build/CS2CheatCpp.exe
-        draft: false 
-        prerelease: false
+    - name: Commit and Push Build Artifacts
+      run: |
+        git config --global user.name "GitHub Action"
+        git config --global user.email "action@github.com"
+        git add ./build/CS2CheatCpp.exe
+        git commit -m "Add built artifact for CS2 Cheat"
+        git push
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
