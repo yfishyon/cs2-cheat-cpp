@@ -30,25 +30,8 @@ jobs:
          cd build
          dir
       shell: cmd
-
-    - name: Create Release
-      id: create_release
-      run: |
-        echo "Creating a release"
-        VERSION="v$(date +'%Y%m%d%H%M%S')"
-        echo "Release version: $VERSION"
-        RESPONSE=$(curl -s -X POST \
-          -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-          -H "Content-Type: application/json" \
-          -d "{\"tag_name\": \"$VERSION\", \"name\": \"$VERSION\", \"body\": \"Release $VERSION\"}" \
-          https://api.github.com/repos/${{ github.repository }}/releases)
-        echo "$RESPONSE"
-        echo "::set-output name=upload_url::$(echo $RESPONSE | jq -r .upload_url | sed -e "s/{?name,label}//")"
-
-    - name: Upload Release Asset
-      uses: actions/upload-release-asset@v1
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v2
       with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./build/CS2CheatCpp.exe
-        asset_name: CS2CheatCpp.exe
-        asset_content_type: application/octet-stream
+         name: cs2-cheat
+         path: build/CS2CheatCpp.exe
