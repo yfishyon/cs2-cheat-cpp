@@ -1,6 +1,7 @@
 name: CS2 Cheat MSBuild
 
 on:
+  workflow_dispatch:
   push:
      tags:
         - "v*.*.*"
